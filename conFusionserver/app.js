@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var passport = require('passport');
+var authenticate = require('./authenticate');
 
 const mongoose = require('mongoose');
 
@@ -30,29 +32,53 @@ var app = express();
 
 //app.use(cookieParser('12345-67890-09876-54321'));
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(session({
+   name: 'session-id',
+   secret: '12345-67890-09876-54321',
+   saveUninitialized: false,
+   resave: false,
+   store: new FileStore()
+ }));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 function auth (req, res, next) {
-    console.log(req.session);
+    console.log(req.user);
 
-  if(!req.session.user) {
+    if (!req.user) {
       var err = new Error('You are not authenticated!');
       err.status = 403;
-      return next(err);
-  }
-  else {
-    if (req.session.user === 'authenticated') {
-      next();
+      next(err);
     }
     else {
-      var err = new Error('You are not authenticated!');
-      err.status = 403;
-      return next(err);
+          next();
     }
-  }
 }
+
+
+// function auth (req, res, next) {
+//     console.log(req.session);
+
+//   if(!req.session.user) {
+//       var err = new Error('You are not authenticated!');
+//       err.status = 403;
+//       return next(err);
+//   }
+//   else {
+//     if (req.session.user === 'authenticated') {
+//       next();
+//     }
+//     else {
+//       var err = new Error('You are not authenticated!');
+//       err.status = 403;
+//       return next(err);
+//     }
+//   }
+// }
 
 
 // app.use(session({
