@@ -85,7 +85,7 @@ dishRouter.route('/:dishId')
     .catch((err) => next(err));
 });
 
-ishRouter.route('/:dishId/comments')
+dishRouter.route('/:dishId/comments')
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.cors, (req,res,next) => {
     Dishes.findById(req.params.dishId)
@@ -104,7 +104,7 @@ ishRouter.route('/:dishId/comments')
     }, (err) => next(err))
     .catch((err) => next(err));
 })
-.post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Dishes.findById(req.params.dishId)
     .then((dish) => {
         if (dish != null) {
